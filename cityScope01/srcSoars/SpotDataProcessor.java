@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SpotDataProcessor {
     private String dbFilePath;
@@ -33,8 +34,8 @@ public class SpotDataProcessor {
 
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
-                String key = values[0] + "," + values[1] + "," + values[2]; // CurrentTime,X,Y
-                int population = Integer.parseInt(values[3]);
+                String key = values[0] + "," + values[2] + "," + values[3]; // CurrentTime,X,Y
+                int population = Integer.parseInt(values[4]);
                 aggregatedData.merge(key, population, Integer::sum);
             }
 
@@ -43,14 +44,14 @@ public class SpotDataProcessor {
             PreparedStatement pstmt = conn.prepareStatement(sql);
 
             aggregatedData.entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey(Collections.reverseOrder()))
+                    .sorted(Map.Entry.comparingByKey())
                     .forEach(entry -> {
                         try {
                             String[] parts = entry.getKey().split(",");
-                            pstmt.setString(1, parts[0]);
-                            pstmt.setInt(2, Integer.parseInt(parts[1]));
-                            pstmt.setInt(3, Integer.parseInt(parts[2]));
-                            pstmt.setInt(4, entry.getValue());
+                            pstmt.setString(1, parts[0]); // CurrentTime
+                            pstmt.setInt(2, Integer.parseInt(parts[1])); // X
+                            pstmt.setInt(3, Integer.parseInt(parts[2])); // Y
+                            pstmt.setInt(4, entry.getValue()); // TotalPopulation
                             pstmt.executeUpdate();
                         } catch (SQLException e) {
                             e.printStackTrace();
