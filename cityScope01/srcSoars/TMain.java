@@ -228,5 +228,9 @@ public class TMain {
             e.printStackTrace();
 
         }
+
+        DatabaseReader reader = new DatabaseReader(pathOfLogDir+"database.db");
+        reader.readAndPrintData();
+
     }
 }
