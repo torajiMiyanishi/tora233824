@@ -35,7 +35,7 @@ public final class TRuleOfMoveFromCompanyToHome extends TAgentRule {
             TAgentManager agentManager, Map<String, Object> globalSharedVariables) {
         // エージェントが会社にいるならば，自宅に移動する．
         boolean debugFlag = true;
-        TRoleOfFather role = (TRoleOfFather) getOwnerRole();
+        TRoleOfWorker role = (TRoleOfWorker) getOwnerRole();
         if (isAt(role.getCompany())) {
             moveTo(role.getHome());
             appendToDebugInfo("success", debugFlag);

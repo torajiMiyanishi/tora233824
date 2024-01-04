@@ -7,7 +7,7 @@ import jp.soars.core.TSpot;
  * 父親役割
  * @author nagakane
  */
-public final class TRoleOfFather extends TRole {
+public final class TRoleOfWorker extends TRole {
 
     /** 自宅 */
     private final TSpot fHome;
@@ -33,12 +33,12 @@ public final class TRoleOfFather extends TRole {
      * @param home 自宅
      * @param company 会社
      */
-    public TRoleOfFather(TAgent owner, TSpot home, TSpot company) {
+    public TRoleOfWorker(TAgent owner, TSpot home, TSpot company) {
         // 親クラスのコンストラクタを呼び出す．
         // 以下の2つの引数は省略可能で，その場合デフォルト値で設定される．
         // 第3引数:この役割が持つルール数 (デフォルト値 10)
         // 第4引数:この役割が持つ子役割数 (デフォルト値 5)
-        super(ERoleName.Father, owner, 4, 0);
+        super(ERoleName.Worker, owner, 4, 0);
 
         fHome = home;
         fCompany = company;

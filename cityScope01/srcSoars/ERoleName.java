@@ -4,8 +4,10 @@
  */
 public enum ERoleName {
     /** 父親役割 */
-    Father,
+    Worker,
 
-    Spot
+    Spot,
+
+    GameMaster
 
 }

@@ -16,7 +16,7 @@ public class DatabaseReader {
 
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM population_data ORDER BY CurrentTime DESC, X DESC, Y DESC")) {
+             ResultSet rs = stmt.executeQuery("SELECT * FROM population_data  ORDER BY CurrentTime DESC, X DESC, Y DESC")) {
 
             System.out.println("CurrentTime\tX\tY\tTotalPopulation");
             while (rs.next()) {
@@ -31,4 +31,26 @@ public class DatabaseReader {
             e.printStackTrace();
         }
     }
+
+    public void readAndPrintBuildingRequests() {
+        String url = "jdbc:sqlite:" + dbFilePath;
+
+        try (Connection conn = DriverManager.getConnection(url);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM BuildingRequestTable")) {
+
+            System.out.println("GridCode\tRequestNo\tRequestCode\tBuildingTypeCode");
+            while (rs.next()) {
+                String gridCode = rs.getString("GridCode");
+                int requestNo = rs.getInt("RequestNo");
+                String requestCode = rs.getString("RequestCode");
+                String buildingTypeCode = rs.getString("BuildingTypeCode");
+
+                System.out.println(gridCode + "\t" + requestNo + "\t" + requestCode + "\t" + buildingTypeCode);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

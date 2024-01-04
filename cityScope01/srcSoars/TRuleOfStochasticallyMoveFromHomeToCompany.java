@@ -64,7 +64,7 @@ public final class TRuleOfStochasticallyMoveFromHomeToCompany extends TAgentRule
             TAgentManager agentManager, Map<String, Object> globalSharedVariables) {
         // エージェントが自宅にいるかつ移動確率を満たしたならば，会社に移動する．
         boolean debugFlag = true;
-        TRoleOfFather role = (TRoleOfFather) getOwnerRole();
+        TRoleOfWorker role = (TRoleOfWorker) getOwnerRole();
         if (isAt(role.getHome())) {
             if (getRandom().nextDouble() <= fProbability) {
                 moveTo(role.getCompany());

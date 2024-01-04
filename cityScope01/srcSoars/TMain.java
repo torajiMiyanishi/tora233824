@@ -4,11 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import jp.soars.core.TAgent;
 import jp.soars.core.TAgentManager;
@@ -39,7 +35,7 @@ public class TMain {
         String simulationStart = "0/00:00:00";
         String simulationEnd = "1/00:00:00";
         String tick = "1:00:00";
-        List<Enum<?>> stages = List.of(EStage.AgentMoving);
+        List<Enum<?>> stages = List.of(EStage.UpdateWorld,EStage.AgentMoving);
         Set<Enum<?>> agentTypes = new HashSet<>();
         Collections.addAll(agentTypes, EAgentType.values());
         Set<Enum<?>> spotTypes = new HashSet<>();
@@ -73,6 +69,16 @@ public class TMain {
         ICRandom random = builder.getRandom();
         Map<String, Object> globalSharedVariableSet = builder.getGlobalSharedVariableSet();
 
+
+
+        // *************************************************************************************************************
+        // Requestダミーデータの生成
+        // *************************************************************************************************************
+
+        CreateRequestTable dbInitializer = new CreateRequestTable(pathOfLogDir  + "database.db",pathOfLogDir+"dummy_data.csv");
+        dbInitializer.initializeTableFromCSV();
+
+
         // *************************************************************************************************************
         // スポット作成
         //   - Home:Home1, Home2, Home3
@@ -80,6 +86,10 @@ public class TMain {
         // *************************************************************************************************************
 
 
+        //Gamemasterを生成
+        TSpot gamemaster = spotManager.createSpot(ESpotType.GameMaster);
+        TRoleOfGameMaster roleOfGameMaster = new TRoleOfGameMaster(gamemaster);
+        gamemaster.activateRole(ERoleName.GameMaster);
 
 
         // homeスポットを3個生成
@@ -120,16 +130,21 @@ public class TMain {
         //     - 役割:父親役割
         // *************************************************************************************************************
 
-        int noOfFathers = noOfHomes; // 父親の数は家の数と同じ．
-        List<TAgent> fathers = agentManager.createAgents(EAgentType.Father, noOfFathers);
-        for (int i = 0; i < noOfFathers; ++i) {
-            TAgent father = fathers.get(i); // i番目の父親エージェント
+        int noOfhuman = noOfHomes; // 父親の数は家の数と同じ．
+        List<TAgent> humans = agentManager.createAgents(EAgentType.Human, noOfhuman);
+        for (int i = 0; i < noOfhuman; ++i) {
+            TAgent human = humans.get(i); // i番目の父親エージェント
             TSpot home = homes.get(i); // i番目の父親エージェントの自宅
-            father.initializeCurrentSpot(home); // 初期スポットを自宅に設定
+            human.initializeCurrentSpot(home); // 初期スポットを自宅に設定
 
-            new TRoleOfFather(father, home, companies.get(random.nextInt(3))); // 父親役割を作成
-            father.activateRole(ERoleName.Father); // 父親役割をアクティブ化
+            new TRoleOfWorker(human, home, companies.get(random.nextInt(3))); // 父親役割を作成
+            human.activateRole(ERoleName.Worker); // 父親役割をアクティブ化
         }
+
+
+
+
+
 
 
 
@@ -183,9 +198,14 @@ public class TMain {
 //            }
 
 
+            List<TSpot> HomeSpots = spotManager.getSpots(ESpotType.Home);
+            List<TSpot> CompanySpots = spotManager.getSpots(ESpotType.Company);
+
+            List<TSpot> allSpots = new ArrayList<>();
+            allSpots.addAll(HomeSpots);
+            allSpots.addAll(CompanySpots);
 
 
-            List<TSpot> allSpots = spotManager.getSpots();
             for (TSpot spot : allSpots) {
                 TRoleOfSpot roleOfSpot = (TRoleOfSpot) spot.getRole(ERoleName.Spot);
                 spotLogPW.print(ruleExecutor.getCurrentTime());
@@ -198,16 +218,8 @@ public class TMain {
                 spotLogPW.print(',');
                 spotLogPW.println(spot.getAgents().size());
 
-
-
-
-
-
-
                 // 他のスポットの情報もここで表示できます
             }
-
-
 
 
         }
@@ -230,7 +242,7 @@ public class TMain {
         }
 
         DatabaseReader reader = new DatabaseReader(pathOfLogDir+"database.db");
-        reader.readAndPrintData();
+        reader.readAndPrintBuildingRequests();
 
     }
 }
