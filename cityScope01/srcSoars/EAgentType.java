@@ -3,6 +3,6 @@
  * @author nagakane
  */
 public enum EAgentType {
-    /** 父親 */
-    Father
+    /** 人間 */
+    Human
 }
